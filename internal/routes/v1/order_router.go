@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"net/http"
 	"rest-v3/internal/handlers"
 	"rest-v3/internal/models/dto"
 	"strconv"
@@ -43,7 +44,7 @@ func CreateOrder(c *gin.Context) {
 
 	err := c.BindJSON(&produtoDto)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Erro ao analisar JSON"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Erro ao analisar JSON"})
 		return
 	}
 	orderHandler.CreateOrder(produtoDto)
