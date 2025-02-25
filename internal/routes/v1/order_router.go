@@ -2,16 +2,16 @@ package v1
 
 import (
 	"rest-v3/internal/handlers"
+	"rest-v3/internal/models/dto"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-var pedidoHandler handlers.OrderHandler
+var orderHandler handlers.OrderHandler
 
-func SetupOrderRoutes(router *gin.RouterGroup, db *gorm.DB) {
-	pedidoHandler = handlers.NewOrderHandler(db)
+func SetupOrderRoutes(router *gin.RouterGroup, handler handlers.OrderHandler) {
+	orderHandler = handler
 	router.GET("/order", GetOrders)
 	router.GET("/order/:id", GetById)
 	router.POST("/order", CreateOrder)
@@ -19,7 +19,7 @@ func SetupOrderRoutes(router *gin.RouterGroup, db *gorm.DB) {
 
 func GetOrders(c *gin.Context) {
 	// Lógica para listar pedidos
-	pedidoHandler.ListarPedidos()
+	orderHandler.GetOrders()
 }
 
 func GetById(c *gin.Context) {
@@ -35,9 +35,16 @@ func GetById(c *gin.Context) {
 	}
 
 	// Lógica para obter um pedido específico
-	pedidoHandler.GetById(idPedido)
+	orderHandler.GetById(idPedido)
 }
 
 func CreateOrder(c *gin.Context) {
-	// Lógica para criar um novo pedido
+	var produtoDto dto.OrderDTO
+
+	err := c.BindJSON(&produtoDto)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Erro ao analisar JSON"})
+		return
+	}
+	orderHandler.CreateOrder(produtoDto)
 }

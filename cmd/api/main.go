@@ -2,23 +2,28 @@ package main
 
 import (
 	"log"
-
-	repositories "rest-v3/internal/config/db"
+	database "rest-v3/internal/config/db"
+	"rest-v3/internal/handlers"
+	"rest-v3/internal/repositories"
 	v1 "rest-v3/internal/routes/v1"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db, err := repositories.InitDB()
+	db, err := database.InitDB()
 	if err != nil {
 		log.Fatalf("Falha ao inicializar o banco de dados: %v", err)
 	}
 
+	orderRepository := repositories.NewOrderRepository(db)
+	orderHandler := handlers.NewOrderHandler(orderRepository)
+
 	router := gin.Default()
 
 	v1Group := router.Group("/api/v1")
-	v1.SetupOrderRoutes(v1Group, db)
+
+	v1.SetupOrderRoutes(v1Group, orderHandler)
 	//v1.SetupPedidosRoutes(v1Group, db)
 
 	/*

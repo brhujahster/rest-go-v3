@@ -1,16 +1,20 @@
 package handlers
 
-import "gorm.io/gorm"
+import (
+	"rest-v3/internal/models"
+	"rest-v3/internal/models/dto"
+	"rest-v3/internal/repositories"
+)
 
 type OrderHandler struct {
-	DB *gorm.DB
+	repository *repositories.OrderRepository
 }
 
-func NewOrderHandler(db *gorm.DB) OrderHandler {
-	return OrderHandler{DB: db}
+func NewOrderHandler(r *repositories.OrderRepository) OrderHandler {
+	return OrderHandler{repository: r}
 }
 
-func (p *OrderHandler) ListarPedidos() {
+func (p *OrderHandler) GetOrders() {
 	// Lógica para listar pedidos
 }
 
@@ -18,6 +22,18 @@ func (p *OrderHandler) GetById(id int) {
 	// Lógica para obter um pedido específico
 }
 
-func (p *OrderHandler) CriarPedido() {
-	// Lógica para criar um novo pedido
+func (p *OrderHandler) CreateOrder(dto dto.OrderDTO) {
+	order := p.convertToModel(dto)
+	p.repository.CreateOrder(&order)
+}
+
+func (p *OrderHandler) convertToModel(dto dto.OrderDTO) models.Order {
+	order := models.Order{
+		ID:         dto.ID,
+		UserID:     dto.UserID,
+		Status:     dto.Status,
+		TotalPrice: dto.TotalPrice,
+	}
+
+	return order
 }
