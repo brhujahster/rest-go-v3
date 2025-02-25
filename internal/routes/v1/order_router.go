@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"fmt"
 	"net/http"
 	"rest-v3/internal/handlers"
 	"rest-v3/internal/models/dto"
@@ -20,8 +19,8 @@ func SetupOrderRoutes(router *gin.RouterGroup, handler handlers.OrderHandler) {
 }
 
 func GetOrders(c *gin.Context) {
-	// Lógica para listar pedidos
-	orderHandler.GetOrders()
+	ordersResponse := orderHandler.GetOrders()
+	c.JSON(http.StatusOK, ordersResponse)
 }
 
 func GetById(c *gin.Context) {
@@ -38,16 +37,17 @@ func GetById(c *gin.Context) {
 
 	// Lógica para obter um pedido específico
 	p := orderHandler.GetById(idPedido)
-	fmt.Print(p)
+	c.JSON(http.StatusOK, p)
 }
 
 func CreateOrder(c *gin.Context) {
-	var produtoDto dto.OrderDTO
+	var produtoDto dto.OrderRequest
 
 	err := c.BindJSON(&produtoDto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Erro ao analisar JSON"})
 		return
 	}
-	orderHandler.CreateOrder(produtoDto)
+	orderResponse := orderHandler.CreateOrder(produtoDto)
+	c.JSON(http.StatusCreated, orderResponse)
 }

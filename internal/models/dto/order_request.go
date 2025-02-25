@@ -1,6 +1,6 @@
 package dto
 
-type OrderDTO struct {
+type OrderRequest struct {
 	ID         int     `json:"id"`
 	UserID     int     `json:"user_id"`
 	Status     string  `json:"status"`
