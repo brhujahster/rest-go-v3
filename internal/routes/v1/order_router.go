@@ -16,6 +16,8 @@ func SetupOrderRoutes(router *gin.RouterGroup, handler handlers.OrderHandler) {
 	router.GET("/order", GetOrders)
 	router.GET("/order/:id", GetById)
 	router.POST("/order", CreateOrder)
+	router.PUT("/order/:id", UpdateOrder)
+	router.DELETE("/order/:id", DeleteOrder)
 }
 
 func GetOrders(c *gin.Context) {
@@ -26,12 +28,12 @@ func GetOrders(c *gin.Context) {
 func GetById(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
-		c.JSON(400, gin.H{"error": "ID do pedido não fornecido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID do pedido não fornecido"})
 		return
 	}
 	idPedido, err := strconv.Atoi(id)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "ID do pedido inválido"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID do pedido inválido"})
 		return
 	}
 
@@ -50,4 +52,44 @@ func CreateOrder(c *gin.Context) {
 	}
 	orderResponse := orderHandler.CreateOrder(produtoDto)
 	c.JSON(http.StatusCreated, orderResponse)
+}
+
+func UpdateOrder(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID do pedido não fornecido"})
+		return
+	}
+	idPedido, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID do pedido inválido"})
+		return
+	}
+	var orderRequest dto.OrderRequest
+	err = c.BindJSON(&orderRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Erro ao analisar JSON"})
+		return
+	}
+	orderResponse := orderHandler.UpdateOrder(idPedido, orderRequest)
+	c.JSON(http.StatusOK, orderResponse)
+}
+
+func DeleteOrder(c *gin.Context) {
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID do pedido não fornecido"})
+		return
+	}
+	idPedido, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID do pedido inválido"})
+		return
+	}
+	err = orderHandler.DeleteOrder(idPedido)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao excluir o pedido"})
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
 }

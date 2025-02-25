@@ -15,7 +15,7 @@ func NewOrderHandler(r *repositories.OrderRepository) OrderHandler {
 }
 
 func (p *OrderHandler) GetOrders() []dto.OrderResponse {
-	orders, err := p.repository.GetOrders()
+	orders, err := p.repository.GetAll()
 	var ordersReponse []dto.OrderResponse
 	if err != nil {
 		// Handle the error appropriately, e.g., return an empty slice or log the error
@@ -30,7 +30,7 @@ func (p *OrderHandler) GetOrders() []dto.OrderResponse {
 
 func (p *OrderHandler) GetById(id int) dto.OrderResponse {
 	// Lógica para obter um pedido específico
-	order, err := p.repository.GetOrderById(id)
+	order, err := p.repository.GetById(id)
 	if err != nil {
 		// Handle the error appropriately, e.g., return a zero value or log the error
 		return dto.OrderResponse{}
@@ -41,10 +41,24 @@ func (p *OrderHandler) GetById(id int) dto.OrderResponse {
 
 func (p *OrderHandler) CreateOrder(dto dto.OrderRequest) dto.OrderResponse {
 	order := p.convertToModel(dto)
-	p.repository.CreateOrder(&order)
+	p.repository.Create(&order)
 
 	return p.convertToDto(order)
 
+}
+
+func (p *OrderHandler) UpdateOrder(id int, dto dto.OrderRequest) dto.OrderResponse {
+	order := p.convertToModel(dto)
+	p.repository.Update(id, &order)
+	return p.convertToDto(order)
+}
+
+func (p *OrderHandler) DeleteOrder(id int) error {
+	err := p.repository.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *OrderHandler) convertToModel(dto dto.OrderRequest) models.Order {
