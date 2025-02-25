@@ -14,7 +14,9 @@ func InitDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// Somente para teste
+	// Este comando criar as tabelas no banco de dados, só deve ser usado em ambiente de desenvolvimento
+	// Ao se criar um novo modelo, é necessário adicionar a estrutura do modelo aqui
+	// Exemplo: db.AutoMigrate(&models.User{})
 	db.AutoMigrate(models.Order{})
 
 	return db, nil
