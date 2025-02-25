@@ -18,8 +18,15 @@ func (p *OrderHandler) GetOrders() {
 	// Lógica para listar pedidos
 }
 
-func (p *OrderHandler) GetById(id int) {
+func (p *OrderHandler) GetById(id int) models.Order {
 	// Lógica para obter um pedido específico
+	order, err := p.repository.GetOrderById(id)
+	if err != nil {
+		// Handle the error appropriately, e.g., return a zero value or log the error
+		return models.Order{}
+	}
+
+	return *order
 }
 
 func (p *OrderHandler) CreateOrder(dto dto.OrderDTO) {

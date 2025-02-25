@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"rest-v3/internal/handlers"
 	"rest-v3/internal/models/dto"
@@ -36,7 +37,8 @@ func GetById(c *gin.Context) {
 	}
 
 	// Lógica para obter um pedido específico
-	orderHandler.GetById(idPedido)
+	p := orderHandler.GetById(idPedido)
+	fmt.Print(p)
 }
 
 func CreateOrder(c *gin.Context) {
